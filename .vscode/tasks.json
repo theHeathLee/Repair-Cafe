@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm run serve",
+      "type": "shell",
+      "command": "npm run serve",
+      "problemMatcher": [],
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Build Vue App",
+      "type": "shell",
+      "command": "npm run build",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Deploy to Firebase",
+      "type": "shell",
+      "command": "firebase deploy",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Firebase Emulators",
+      "type": "shell",
+      "command": "firebase emulators:start",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Hot build and serve",
+      "type": "shell",
+      "command": "npm run build && npm run serve",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": []
+    }
+    
+  ],
+  "compounds": [
+    {
+      "label": "Build and Serve",
+      "dependsOn": ["Build Vue App", "npm run serve"],
+    }
+  ]
+}
