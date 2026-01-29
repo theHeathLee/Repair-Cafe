@@ -80,6 +80,12 @@
     <!-- Footer with Legal Information -->
     <footer class="legal-footer">
       <div class="footer-content">
+        <div class="footer-social">
+          <a href="https://www.instagram.com/repaircafe_friedrichshain/" target="_blank" rel="noopener noreferrer" class="social-link">
+            <i class="fab fa-instagram"></i>
+            <span>{{ instagramText }}</span>
+          </a>
+        </div>
         <div class="footer-links">
           <a href="#" @click.prevent="showImpressum = true">{{ impressumLinkText }}</a>
           <span class="footer-separator">|</span>
@@ -377,6 +383,9 @@ export default {
       return this.currentLang === "de"
         ? `© ${currentYear} Repair Café Friedrichshain`
         : `© ${currentYear} Repair Cafe Friedrichshain`;
+    },
+    instagramText() {
+      return this.currentLang === "de" ? "Instagram" : "Instagram";
     },
     impressumTitle() {
       return this.currentLang === "de" ? "Impressum" : "Imprint";
@@ -979,6 +988,41 @@ body {
   margin: 0 auto;
 }
 
+.footer-social {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.social-link:hover {
+  color: var(--primary-color);
+  background-color: var(--bg-light);
+  transform: translateY(-2px);
+}
+
+.social-link i {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  transition: transform 0.2s ease;
+}
+
+.social-link:hover i {
+  transform: scale(1.1);
+}
+
 .footer-links {
   margin-bottom: var(--spacing-xs);
 }
@@ -1082,6 +1126,18 @@ body {
   .modal-content h2 {
     font-size: 1.5rem;
     padding-right: var(--spacing-lg);
+  }
+
+  .footer-social {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .social-link {
+    font-size: 0.9rem;
+  }
+
+  .social-link i {
+    font-size: 1.3rem;
   }
 
   .footer-links {
