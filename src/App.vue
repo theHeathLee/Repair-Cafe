@@ -41,9 +41,14 @@
         </div>
       </section>
 
-      <section class="info-card">
+      <section class="info-card bring-items-section">
         <h2>{{ bringHeading }}</h2>
-        <p>{{ bringText }}</p>
+        <div class="bring-items-grid">
+          <div v-for="item in bringItems" :key="item.name" class="bring-item">
+            <i :class="item.icon" class="bring-item-icon"></i>
+            <span class="bring-item-name">{{ item.name }}</span>
+          </div>
+        </div>
       </section>
 
       <section class="info-card">
@@ -285,6 +290,35 @@ export default {
       return this.currentLang === "de"
         ? "Elektro-Haushaltsgeräte, Elektrogeräte, Nähsachen, Software, Handys, Tablets, Computer, Drohnen, Fotozeug – was halt alles so kaputt geht. Und ab jetzt können wir auch Fahrräder reparieren."
         : "Household electrical appliances, electronic devices, sewing projects, software, mobile phones, tablets, computers, drones, camera gear – everything that tends to break. And from now on we can also repair bicycles.";
+    },
+    bringItems() {
+      if (this.currentLang === "de") {
+        return [
+          { name: "Elektro-Haushaltsgeräte", icon: "fas fa-blender" },
+          { name: "Elektrogeräte", icon: "fas fa-plug" },
+          { name: "Nähsachen", icon: "fas fa-cut" },
+          { name: "Software", icon: "fas fa-code" },
+          { name: "Handys", icon: "fas fa-mobile-alt" },
+          { name: "Tablets", icon: "fas fa-tablet-alt" },
+          { name: "Computer", icon: "fas fa-laptop" },
+          { name: "Drohnen", icon: "fas fa-helicopter" },
+          { name: "Fotozeug", icon: "fas fa-camera" },
+          { name: "Fahrräder", icon: "fas fa-bicycle" },
+        ];
+      } else {
+        return [
+          { name: "Household Appliances", icon: "fas fa-blender" },
+          { name: "Electronic Devices", icon: "fas fa-plug" },
+          { name: "Sewing Projects", icon: "fas fa-cut" },
+          { name: "Software", icon: "fas fa-code" },
+          { name: "Mobile Phones", icon: "fas fa-mobile-alt" },
+          { name: "Tablets", icon: "fas fa-tablet-alt" },
+          { name: "Computers", icon: "fas fa-laptop" },
+          { name: "Drones", icon: "fas fa-helicopter" },
+          { name: "Camera Gear", icon: "fas fa-camera" },
+          { name: "Bicycles", icon: "fas fa-bicycle" },
+        ];
+      }
     },
     supportHeading() {
       return this.currentLang === "de"
@@ -673,6 +707,46 @@ body {
   color: var(--text-secondary);
 }
 
+.bring-items-section {
+  text-align: center;
+}
+
+.bring-items-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  justify-items: center;
+}
+
+.bring-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.bring-item:hover {
+  transform: translateY(-4px);
+  background-color: var(--bg-light);
+}
+
+.bring-item-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.bring-item-name {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: center;
+  font-weight: 500;
+}
+
 .content h2 {
   margin-top: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
@@ -723,6 +797,19 @@ body {
     font-size: 1.5rem;
   }
 
+  .bring-items-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .bring-item-icon {
+    font-size: 2rem;
+  }
+
+  .bring-item-name {
+    font-size: 0.85rem;
+  }
+
   .location-section {
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
@@ -764,6 +851,11 @@ body {
   .motto-section,
   .info-card {
     padding: var(--spacing-sm);
+  }
+
+  .bring-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
   }
 }
 
