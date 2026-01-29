@@ -93,6 +93,10 @@
             <i class="fab fa-github"></i>
             <span>{{ githubText }}</span>
           </a>
+          <a href="mailto:info@repaircafe-friedrichshain.de" class="social-link">
+            <i class="fas fa-envelope"></i>
+            <span>{{ emailText }}</span>
+          </a>
         </div>
         <div class="footer-links">
           <a href="#" @click.prevent="showImpressum = true">{{ impressumLinkText }}</a>
@@ -429,6 +433,9 @@ export default {
     },
     githubText() {
       return this.currentLang === "de" ? "GitHub" : "GitHub";
+    },
+    emailText() {
+      return this.currentLang === "de" ? "E-Mail" : "Email";
     },
     darkModeToggleText() {
       return this.currentLang === "de"
