@@ -85,6 +85,10 @@
             <i class="fab fa-instagram"></i>
             <span>{{ instagramText }}</span>
           </a>
+          <a href="https://github.com/theHeathLee/Repair-Cafe" target="_blank" rel="noopener noreferrer" class="social-link">
+            <i class="fab fa-github"></i>
+            <span>{{ githubText }}</span>
+          </a>
         </div>
         <div class="footer-links">
           <a href="#" @click.prevent="showImpressum = true">{{ impressumLinkText }}</a>
@@ -400,6 +404,9 @@ export default {
     },
     instagramText() {
       return this.currentLang === "de" ? "Instagram" : "Instagram";
+    },
+    githubText() {
+      return this.currentLang === "de" ? "GitHub" : "GitHub";
     },
     impressumTitle() {
       return this.currentLang === "de" ? "Impressum" : "Imprint";
@@ -1011,6 +1018,8 @@ body {
   margin-bottom: var(--spacing-md);
   display: flex;
   justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 .social-link {
