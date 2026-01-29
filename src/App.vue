@@ -21,17 +21,6 @@
       <h1>{{ headingText }}</h1>
       <p class="lead">{{ bodyText }}</p>
 
-      <iframe
-        class="map"
-        width="600"
-        height="450"
-        style="border:0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="googleMapUrl"
-      ></iframe>
-
       <section class="motto-section">
         <div class="motto-text">
           <h2>{{ mottoHeading }}</h2>
@@ -61,6 +50,16 @@
         <h2>{{ supportHeading }}</h2>
         <p>{{ supportText }}</p>
       </section>
+
+      <section class="location-section">
+        <div class="location-address">
+          <h2>{{ locationHeading }}</h2>
+          <p>{{ locationAddress }}</p>
+        </div>
+        <div class="location-map">
+          <div ref="mapContainer" class="map"></div>
+        </div>
+      </section>
     </div>
 
     <!-- Cookie Consent Banner -->
@@ -85,6 +84,10 @@
 
 <script>
 import { upcomingDates } from "./upcomingDates.js";
+import L from "leaflet";
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import iconRetina from "leaflet/dist/images/marker-icon-2x.png";
 
 function getNextCafeDate() {
   const today = new Date();
@@ -110,11 +113,82 @@ export default {
       currentLang: "de",
       nextDateFormatted: next ? next.formatted : null,
       cookieConsent: consent !== null, // Show banner if no consent stored
-      googleMapUrl:
-        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2427.8985857933244!2d13.46478597722804!3d52.51717437206033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47a84f003b8f2781%3A0xed19a688a2b4312d!2sRepaircafe-Friedrichshain!5e0!3m2!1sen!2sde!4v1748112503102!5m2!1sen!2sde",
+      map: null,
+      // Repair Cafe Friedrichshain coordinates
+      cafeLat: 52.51717437206033,
+      cafeLng: 13.46478597722804,
     };
   },
+  mounted() {
+    // Use nextTick to ensure DOM is fully rendered
+    this.$nextTick(() => {
+      this.initMap();
+    });
+  },
+  beforeUnmount() {
+    if (this.map) {
+      this.map.remove();
+    }
+  },
   methods: {
+    initMap() {
+      if (!this.$refs.mapContainer) {
+        console.error("Map container not found");
+        return;
+      }
+
+      // Check if container has dimensions
+      const container = this.$refs.mapContainer;
+      if (container.offsetHeight === 0 || container.offsetWidth === 0) {
+        console.warn("Map container has no dimensions, retrying...");
+        setTimeout(() => this.initMap(), 100);
+        return;
+      }
+
+      // Fix Leaflet default icon paths (required for webpack/Vue)
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: iconRetina,
+        iconUrl: icon,
+        shadowUrl: iconShadow,
+      });
+
+      try {
+        // Initialize Leaflet map
+        this.map = L.map(this.$refs.mapContainer, {
+          zoomControl: true,
+          preferCanvas: false,
+        }).setView([this.cafeLat, this.cafeLng], 16);
+
+        // Add OpenStreetMap tiles (no cookies, open source)
+        const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+        });
+        
+        osmLayer.addTo(this.map);
+
+        // Invalidate size to ensure map renders correctly after a short delay
+        setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+          }
+        }, 200);
+
+        // Add marker for Repair Cafe location
+        const cafeName = this.currentLang === "de"
+          ? "Repair Café Friedrichshain"
+          : "Repair Cafe Friedrichshain";
+        
+        L.marker([this.cafeLat, this.cafeLng])
+          .addTo(this.map)
+          .bindPopup(cafeName)
+          .openPopup();
+      } catch (error) {
+        console.error("Error initializing map:", error);
+      }
+    },
     acceptCookies() {
       localStorage.setItem("cookieConsent", "accepted");
       localStorage.setItem("cookieConsentDate", new Date().toISOString());
@@ -180,21 +254,31 @@ export default {
         ? "Schreibt uns eine Mail oder kommt gern vorbei. Es ist manchmal stressig, es klappt nicht immer alles und vielleicht ist auch mal der Kaffee alle. Aber unser Dank wird euch auf ewig verfolgen. Wir suchen insbesondere Leute, die Fahrräder reparieren können, und alle, die sich mit ihren Fähigkeiten einbringen möchten."
         : "Send us an email or just drop by. Sometimes it’s stressful, not everything works out and maybe the coffee is gone – but you will have our eternal gratitude. We are especially looking for people who can repair bicycles and everyone who wants to contribute their skills.";
     },
+    locationHeading() {
+      return this.currentLang === "de"
+        ? "Wo findet ihr uns?"
+        : "Where to find us";
+    },
+    locationAddress() {
+      return this.currentLang === "de"
+        ? "Repair Café Friedrichshain\nFriedrichshain, Berlin\nDeutschland"
+        : "Repair Café Friedrichshain\nFriedrichshain, Berlin\nGermany";
+    },
     cookieBannerTitle() {
       return this.currentLang === "de"
-        ? "Cookie-Einstellungen"
-        : "Cookie Settings";
+        ? "Datenschutz-Information"
+        : "Privacy Information";
     },
     cookieBannerText() {
       return this.currentLang === "de"
-        ? "Diese Website verwendet Cookies von Google Maps, um Kartenfunktionen bereitzustellen. Durch die Nutzung unserer Website stimmen Sie der Verwendung von Cookies zu. Sie können jederzeit Ihre Einwilligung widerrufen."
-        : "This website uses cookies from Google Maps to provide map functionality. By using our website, you consent to the use of cookies. You can revoke your consent at any time.";
+        ? "Diese Website verwendet keine Cookies. Die interaktive Karte wird mit OpenStreetMap bereitgestellt, einer quelloffenen Alternative, die keine Cookies verwendet und Ihre Privatsphäre respektiert."
+        : "This website does not use cookies. The interactive map is provided by OpenStreetMap, an open-source alternative that does not use cookies and respects your privacy.";
     },
     cookieAcceptText() {
-      return this.currentLang === "de" ? "Akzeptieren" : "Accept";
+      return this.currentLang === "de" ? "Verstanden" : "Got it";
     },
     cookieDeclineText() {
-      return this.currentLang === "de" ? "Ablehnen" : "Decline";
+      return this.currentLang === "de" ? "Schließen" : "Close";
     },
   },
 };
@@ -317,16 +401,68 @@ body {
   display: inline-block;
 }
 
+.location-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg);
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+  align-items: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.location-section:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.location-address h2 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.location-address p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+.location-map {
+  text-align: center;
+}
+
 .map {
   display: block;
-  margin: var(--spacing-xl) auto;
   width: 100%;
-  max-width: 900px;
   height: 500px;
+  min-height: 500px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
   border: 1px solid var(--border-color);
+  z-index: 1;
+  position: relative;
+  background-color: #f0f0f0;
+}
+
+/* Leaflet map styling adjustments - using global styles */
+.map ::v-deep .leaflet-container,
+.map :deep(.leaflet-container) {
+  border-radius: var(--radius-lg);
+  height: 100% !important;
+  width: 100% !important;
+  min-height: 500px;
+  font-family: inherit;
+  background-color: transparent;
 }
 
 .motto-section {
@@ -461,9 +597,23 @@ body {
     font-size: 1.5rem;
   }
 
+  .location-section {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .location-address {
+    text-align: center;
+  }
+
+  .location-address h2 {
+    font-size: 1.5rem;
+  }
+
   .map {
     height: 350px;
-    margin: var(--spacing-lg) auto;
+    margin: 0;
   }
 
   .lang-switcher {
