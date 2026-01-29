@@ -1,6 +1,11 @@
 /**
- * List of upcoming Repair Cafe dates (YYYY-MM-DD).
+ * List of upcoming Repair Cafe dates.
+ * Each entry can be:
+ * - A string in YYYY-MM-DD format (e.g., "2026-01-31")
+ * - An object with date and canceled status: { date: "2026-01-31", canceled: true }
+ * 
  * Add future dates here; the app will show the next one that hasn't passed.
+ * If a date is canceled, set canceled: true to display a cancellation message.
  */
 export const upcomingDates = [
   // Last Saturday of each month in 2026

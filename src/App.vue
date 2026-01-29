@@ -19,7 +19,7 @@
     <img alt="Logo" src="./assets/Repaircafe-Logo_x9galzmx.png" class="logo" />
     <div class="content">
       <h1>{{ headingText }}</h1>
-      <p class="lead">{{ bodyText }}</p>
+      <p :class="['lead', { canceled: nextDateCanceled }]">{{ bodyText }}</p>
 
       <section class="motto-section">
         <div class="motto-text">
@@ -143,13 +143,21 @@ import iconRetina from "leaflet/dist/images/marker-icon-2x.png";
 function getNextCafeDate() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  for (const dateStr of upcomingDates) {
+  for (const dateEntry of upcomingDates) {
+    // Handle both string format and object format
+    const dateStr = typeof dateEntry === "string" ? dateEntry : dateEntry.date;
+    const canceled = typeof dateEntry === "object" ? dateEntry.canceled : false;
+    
     const d = new Date(dateStr + "T12:00:00");
     if (d >= today) {
       const day = String(d.getDate()).padStart(2, "0");
       const month = String(d.getMonth() + 1).padStart(2, "0");
       const year = d.getFullYear();
-      return { formatted: `${day}.${month}.${year}`, date: d };
+      return { 
+        formatted: `${day}.${month}.${year}`, 
+        date: d,
+        canceled: canceled || false
+      };
     }
   }
   return null;
@@ -163,6 +171,7 @@ export default {
     return {
       currentLang: "de",
       nextDateFormatted: next ? next.formatted : null,
+      nextDateCanceled: next ? next.canceled : false,
       cookieConsent: consent !== null, // Show banner if no consent stored
       map: null,
       // Repair Cafe Friedrichshain coordinates
@@ -264,6 +273,11 @@ export default {
         return this.currentLang === "de"
           ? "Repair Café ist in der Winterpause"
           : "Repair cafe is on winter break";
+      }
+      if (this.nextDateCanceled) {
+        return this.currentLang === "de"
+          ? `Das Repair Café am ${this.nextDateFormatted} ist leider abgesagt`
+          : `The Repair Cafe on ${this.nextDateFormatted} has been canceled`;
       }
       return this.currentLang === "de"
         ? `Nächstes Repair Café ist am ${this.nextDateFormatted}`
@@ -568,6 +582,11 @@ body {
   background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(39, 174, 96, 0.05) 100%);
   border-radius: var(--radius-md);
   display: inline-block;
+}
+
+.content .lead.canceled {
+  color: #e74c3c;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
 }
 
 .location-section {
