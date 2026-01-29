@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{ 'dark-mode': darkMode }">
     <div class="lang-switcher">
       <button
         type="button"
@@ -16,6 +16,10 @@
         EN
       </button>
     </div>
+    <button class="dark-mode-toggle" @click="toggleDarkMode" :title="darkModeToggleText">
+      <i v-if="darkMode" class="fas fa-sun"></i>
+      <i v-else class="fas fa-moon"></i>
+    </button>
     <img alt="Logo" src="./assets/Repaircafe-Logo_x9galzmx.png" class="logo" />
     <div class="content">
       <h1>{{ headingText }}</h1>
@@ -170,13 +174,17 @@ function getNextCafeDate() {
 export default {
   data() {
     const next = getNextCafeDate();
-    // Check if user has already given consent
-    const consent = localStorage.getItem("cookieConsent");
-    return {
-      currentLang: "de",
-      nextDateFormatted: next ? next.formatted : null,
-      nextDateCanceled: next ? next.canceled : false,
-      cookieConsent: consent !== null, // Show banner if no consent stored
+      // Check if user has already given consent
+      const consent = localStorage.getItem("cookieConsent");
+      // Check for dark mode preference (default to light mode)
+      const savedDarkMode = localStorage.getItem("darkMode");
+      const isDarkMode = savedDarkMode === "true";
+      return {
+        currentLang: "de",
+        nextDateFormatted: next ? next.formatted : null,
+        nextDateCanceled: next ? next.canceled : false,
+        cookieConsent: consent !== null, // Show banner if no consent stored
+        darkMode: isDarkMode,
       map: null,
       // Repair Cafe Friedrichshain coordinates
       cafeLat: 52.51717437206033,
@@ -190,6 +198,8 @@ export default {
     this.$nextTick(() => {
       this.initMap();
     });
+    // Apply dark mode on mount
+    this.applyDarkMode();
   },
   beforeUnmount() {
     if (this.map) {
@@ -264,6 +274,18 @@ export default {
       localStorage.setItem("cookieConsent", "declined");
       localStorage.setItem("cookieConsentDate", new Date().toISOString());
       this.cookieConsent = true;
+    },
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode;
+      localStorage.setItem("darkMode", this.darkMode.toString());
+      this.applyDarkMode();
+    },
+    applyDarkMode() {
+      if (this.darkMode) {
+        document.documentElement.classList.add("dark-mode");
+      } else {
+        document.documentElement.classList.remove("dark-mode");
+      }
     },
   },
   computed: {
@@ -408,6 +430,11 @@ export default {
     githubText() {
       return this.currentLang === "de" ? "GitHub" : "GitHub";
     },
+    darkModeToggleText() {
+      return this.currentLang === "de"
+        ? this.darkMode ? "Hellmodus aktivieren" : "Dunkelmodus aktivieren"
+        : this.darkMode ? "Switch to light mode" : "Switch to dark mode";
+    },
     impressumTitle() {
       return this.currentLang === "de" ? "Impressum" : "Imprint";
     },
@@ -500,10 +527,26 @@ export default {
   --spacing-xl: 60px;
 }
 
+/* Dark mode variables */
+:root.dark-mode,
+#app.dark-mode {
+  --primary-color: #2ecc71;
+  --primary-dark: #27ae60;
+  --text-primary: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --bg-light: #1a1a1a;
+  --bg-white: #2d2d2d;
+  --border-color: #404040;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
 body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-light);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #app {
@@ -539,6 +582,47 @@ body {
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.dark-mode-toggle {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--bg-light);
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.dark-mode-toggle i {
+  color: var(--text-primary);
+}
+
+.dark-mode-toggle .fa-sun {
+  color: #f39c12;
+  filter: drop-shadow(0 0 2px rgba(243, 156, 18, 0.5));
+}
+
+.dark-mode-toggle .fa-moon {
+  color: #34495e;
 }
 
 .lang-switcher button {
@@ -647,6 +731,10 @@ body {
   z-index: 1;
   position: relative;
   background-color: #f0f0f0;
+}
+
+#app.dark-mode .map {
+  background-color: #1a1a1a;
 }
 
 /* Leaflet map styling adjustments - using global styles */
@@ -870,6 +958,13 @@ body {
     right: 0;
     justify-content: center;
     margin-bottom: var(--spacing-md);
+  }
+
+  .dark-mode-toggle {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: var(--spacing-sm);
   }
 }
 
