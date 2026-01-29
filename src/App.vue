@@ -51,6 +51,16 @@
         <p>{{ supportText }}</p>
       </section>
 
+      <section class="motto-section">
+        <div class="motto-text">
+          <h2>{{ foundersHeading }}</h2>
+          <p>{{ foundersText }}</p>
+        </div>
+        <div class="motto-image">
+          <img src="./assets/founders.jpg" alt="Gründer des Repair Café Friedrichshain" />
+        </div>
+      </section>
+
       <section class="location-section">
         <div class="location-address">
           <h2>{{ locationHeading }}</h2>
@@ -60,6 +70,36 @@
           <div ref="mapContainer" class="map"></div>
         </div>
       </section>
+    </div>
+
+    <!-- Footer with Legal Information -->
+    <footer class="legal-footer">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="#" @click.prevent="showImpressum = true">{{ impressumLinkText }}</a>
+          <span class="footer-separator">|</span>
+          <a href="#" @click.prevent="showPrivacy = true">{{ privacyLinkText }}</a>
+        </div>
+        <p class="footer-copyright">{{ copyrightText }}</p>
+      </div>
+    </footer>
+
+    <!-- Impressum Modal -->
+    <div v-if="showImpressum" class="modal-overlay" @click="showImpressum = false">
+      <div class="modal-content" @click.stop>
+        <button class="modal-close" @click="showImpressum = false">&times;</button>
+        <h2>{{ impressumTitle }}</h2>
+        <div v-html="impressumContent"></div>
+      </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div v-if="showPrivacy" class="modal-overlay" @click="showPrivacy = false">
+      <div class="modal-content" @click.stop>
+        <button class="modal-close" @click="showPrivacy = false">&times;</button>
+        <h2>{{ privacyTitle }}</h2>
+        <div v-html="privacyContent"></div>
+      </div>
     </div>
 
     <!-- Cookie Consent Banner -->
@@ -117,6 +157,8 @@ export default {
       // Repair Cafe Friedrichshain coordinates
       cafeLat: 52.51717437206033,
       cafeLng: 13.46478597722804,
+      showImpressum: false,
+      showPrivacy: false,
     };
   },
   mounted() {
@@ -254,6 +296,16 @@ export default {
         ? "Schreibt uns eine Mail oder kommt gern vorbei. Es ist manchmal stressig, es klappt nicht immer alles und vielleicht ist auch mal der Kaffee alle. Aber unser Dank wird euch auf ewig verfolgen. Wir suchen insbesondere Leute, die Fahrräder reparieren können, und alle, die sich mit ihren Fähigkeiten einbringen möchten."
         : "Send us an email or just drop by. Sometimes it’s stressful, not everything works out and maybe the coffee is gone – but you will have our eternal gratitude. We are especially looking for people who can repair bicycles and everyone who wants to contribute their skills.";
     },
+    foundersHeading() {
+      return this.currentLang === "de"
+        ? "Über uns"
+        : "About us";
+    },
+    foundersText() {
+      return this.currentLang === "de"
+        ? "Das Repair Café Friedrichshain wurde von engagierten Menschen gegründet, die sich für Nachhaltigkeit und Gemeinschaft einsetzen. Wir glauben daran, dass Reparatur nicht nur Dinge wieder zum Laufen bringt, sondern auch Menschen zusammenbringt und unsere Umwelt schont."
+        : "Repair Café Friedrichshain was founded by dedicated people who are committed to sustainability and community. We believe that repair not only makes things work again, but also brings people together and protects our environment.";
+    },
     locationHeading() {
       return this.currentLang === "de"
         ? "Wo findet ihr uns?"
@@ -261,8 +313,8 @@ export default {
     },
     locationAddress() {
       return this.currentLang === "de"
-        ? "Repair Café Friedrichshain\nFriedrichshain, Berlin\nDeutschland"
-        : "Repair Café Friedrichshain\nFriedrichshain, Berlin\nGermany";
+        ? "Villa Felix\nSchreinerstraße 47\n10247 Berlin"
+        : "Villa Felix\nSchreinerstraße 47\n10247 Berlin";
     },
     cookieBannerTitle() {
       return this.currentLang === "de"
@@ -279,6 +331,80 @@ export default {
     },
     cookieDeclineText() {
       return this.currentLang === "de" ? "Schließen" : "Close";
+    },
+    impressumLinkText() {
+      return this.currentLang === "de" ? "Impressum" : "Imprint";
+    },
+    privacyLinkText() {
+      return this.currentLang === "de" ? "Datenschutzerklärung" : "Privacy Policy";
+    },
+    copyrightText() {
+      const currentYear = new Date().getFullYear();
+      return this.currentLang === "de"
+        ? `© ${currentYear} Repair Café Friedrichshain`
+        : `© ${currentYear} Repair Cafe Friedrichshain`;
+    },
+    impressumTitle() {
+      return this.currentLang === "de" ? "Impressum" : "Imprint";
+    },
+    impressumContent() {
+      return this.currentLang === "de"
+        ? `<p><strong>Angaben gemäß § 5 TMG</strong></p>
+           <p>Repair Café Friedrichshain<br>
+           Villa Felix<br>
+           Schreinerstraße 47<br>
+           10247 Berlin<br>
+           Deutschland</p>
+           <p><strong>Kontakt</strong><br>
+           E-Mail: info@repaircafe-friedrichshain.de</p>
+           <p><strong>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</strong><br>
+           Repair Café Friedrichshain<br>
+           Schreinerstraße 47<br>
+           10247 Berlin</p>`
+        : `<p><strong>Information according to § 5 TMG</strong></p>
+           <p>Repair Café Friedrichshain<br>
+           Villa Felix<br>
+           Schreinerstraße 47<br>
+           10247 Berlin<br>
+           Germany</p>
+           <p><strong>Contact</strong><br>
+           Email: info@repaircafe-friedrichshain.de</p>
+           <p><strong>Responsible for content according to § 55 Abs. 2 RStV</strong><br>
+           Repair Café Friedrichshain<br>
+           Schreinerstraße 47<br>
+           10247 Berlin</p>`;
+    },
+    privacyTitle() {
+      return this.currentLang === "de" ? "Datenschutzerklärung" : "Privacy Policy";
+    },
+    privacyContent() {
+      return this.currentLang === "de"
+        ? `<p><strong>1. Datenschutz auf einen Blick</strong></p>
+           <p><strong>Allgemeine Hinweise</strong><br>
+           Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.</p>
+           
+           <p><strong>2. Datenerfassung auf dieser Website</strong></p>
+           <p><strong>Cookies</strong><br>
+           Diese Website verwendet keine Cookies. Die interaktive Karte wird mit OpenStreetMap bereitgestellt, einer quelloffenen Alternative, die keine Cookies verwendet.</p>
+           
+           <p><strong>3. Ihre Rechte</strong></p>
+           <p>Sie haben jederzeit das Recht, Auskunft über Ihre bei uns gespeicherten personenbezogenen Daten zu erhalten. Bei Fragen zur Datenerfassung können Sie uns kontaktieren.</p>
+           
+           <p><strong>4. Kontakt</strong></p>
+           <p>Bei Fragen zum Datenschutz können Sie uns unter info@repaircafe-friedrichshain.de kontaktieren.</p>`
+        : `<p><strong>1. Privacy at a Glance</strong></p>
+           <p><strong>General Information</strong><br>
+           The following information provides a simple overview of what happens to your personal data when you visit this website.</p>
+           
+           <p><strong>2. Data Collection on This Website</strong></p>
+           <p><strong>Cookies</strong><br>
+           This website does not use cookies. The interactive map is provided by OpenStreetMap, an open-source alternative that does not use cookies.</p>
+           
+           <p><strong>3. Your Rights</strong></p>
+           <p>You have the right to obtain information about your personal data stored by us at any time. If you have questions about data collection, you can contact us.</p>
+           
+           <p><strong>4. Contact</strong></p>
+           <p>If you have questions about data protection, you can contact us at info@repaircafe-friedrichshain.de.</p>`;
     },
   },
 };
@@ -744,6 +870,136 @@ body {
   .cookie-btn {
     flex: 1;
     min-width: 100px;
+  }
+}
+
+/* Legal Footer */
+.legal-footer {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--bg-light);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-links {
+  margin-bottom: var(--spacing-xs);
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.footer-separator {
+  margin: 0 var(--spacing-xs);
+  color: var(--border-color);
+}
+
+.footer-copyright {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: var(--spacing-md);
+}
+
+.modal-content {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  text-align: left;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+.modal-content p {
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.modal-content strong {
+  color: var(--text-primary);
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    padding: var(--spacing-md);
+    max-width: 100%;
+  }
+
+  .modal-content h2 {
+    font-size: 1.5rem;
+    padding-right: var(--spacing-lg);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .footer-separator {
+    display: none;
   }
 }
 </style>
