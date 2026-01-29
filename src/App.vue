@@ -15,11 +15,11 @@
       >
         EN
       </button>
+      <button class="dark-mode-toggle" @click="toggleDarkMode" :title="darkModeToggleText">
+        <i v-if="darkMode" class="fas fa-sun"></i>
+        <i v-else class="fas fa-moon"></i>
+      </button>
     </div>
-    <button class="dark-mode-toggle" @click="toggleDarkMode" :title="darkModeToggleText">
-      <i v-if="darkMode" class="fas fa-sun"></i>
-      <i v-else class="fas fa-moon"></i>
-    </button>
     <img alt="Logo" src="./assets/Repaircafe-Logo_x9galzmx.png" class="logo" />
     <div class="content">
       <h1>{{ headingText }}</h1>
@@ -583,27 +583,24 @@ body {
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
   z-index: 10;
+  align-items: center;
 }
 
 .dark-mode-toggle {
-  position: absolute;
-  top: var(--spacing-md);
-  left: var(--spacing-md);
-  background: var(--bg-white);
+  background: transparent;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0;
   cursor: pointer;
   color: var(--text-primary);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  z-index: 10;
+  margin-left: var(--spacing-xs);
 }
 
 .dark-mode-toggle:hover {
@@ -958,13 +955,6 @@ body {
     right: 0;
     justify-content: center;
     margin-bottom: var(--spacing-md);
-  }
-
-  .dark-mode-toggle {
-    position: relative;
-    top: 0;
-    left: 0;
-    margin-bottom: var(--spacing-sm);
   }
 }
 
