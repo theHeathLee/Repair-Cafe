@@ -2,30 +2,31 @@
   <div class="login-container" :class="{ 'dark-mode': darkMode }">
     <div class="login-card">
       <h1>{{ loginTitle }}</h1>
-      <div v-if="!firebaseConfigured" class="error-message">
+      <div v-if="!firebaseConfigured" class="info-message">
         {{ firebaseNotConfiguredMessage }}
       </div>
-      <p v-if="pendingApproval" class="pending-message">{{ pendingMessage }}</p>
-      
+      <p v-else-if="pendingApproval" class="pending-message">{{ pendingMessage }}</p>
+
+      <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
       <div v-if="error" class="error-message">{{ error }}</div>
       
       <div class="auth-tabs">
         <button 
           :class="{ active: activeTab === 'login' }" 
-          @click="activeTab = 'login'"
+          @click="activeTab = 'login'; error = ''; successMessage = '';"
         >
           {{ loginTabText }}
         </button>
         <button 
           :class="{ active: activeTab === 'register' }" 
-          @click="activeTab = 'register'"
+          @click="activeTab = 'register'; error = ''; successMessage = '';"
         >
           {{ registerTabText }}
         </button>
       </div>
 
       <!-- Login Form -->
-      <form v-if="activeTab === 'login' && firebaseConfigured" @submit.prevent="handleLogin" class="auth-form">
+      <form v-if="activeTab === 'login'" @submit.prevent="handleLogin" class="auth-form">
         <div class="form-group">
           <label>{{ emailLabel }}</label>
           <input 
@@ -33,6 +34,7 @@
             v-model="loginEmail" 
             :placeholder="emailPlaceholder"
             required
+            :disabled="!firebaseConfigured"
           />
         </div>
         <div class="form-group">
@@ -42,15 +44,16 @@
             v-model="loginPassword" 
             :placeholder="passwordPlaceholder"
             required
+            :disabled="!firebaseConfigured"
           />
         </div>
-        <button type="submit" class="btn btn-primary" :disabled="loading">
+        <button type="submit" class="btn btn-primary" :disabled="loading || !firebaseConfigured">
           {{ loading ? loadingText : loginButtonText }}
         </button>
       </form>
 
       <!-- Register Form -->
-      <form v-if="activeTab === 'register' && firebaseConfigured" @submit.prevent="handleRegister" class="auth-form">
+      <form v-if="activeTab === 'register'" @submit.prevent="handleRegister" class="auth-form">
         <div class="form-group">
           <label>{{ emailLabel }}</label>
           <input 
@@ -58,6 +61,7 @@
             v-model="registerEmail" 
             :placeholder="emailPlaceholder"
             required
+            :disabled="!firebaseConfigured"
           />
         </div>
         <div class="form-group">
@@ -68,18 +72,19 @@
             :placeholder="passwordPlaceholder"
             required
             minlength="6"
+            :disabled="!firebaseConfigured"
           />
         </div>
-        <button type="submit" class="btn btn-primary" :disabled="loading">
+        <button type="submit" class="btn btn-primary" :disabled="loading || !firebaseConfigured">
           {{ loading ? loadingText : registerButtonText }}
         </button>
       </form>
 
-      <div v-if="firebaseConfigured" class="divider">
+      <div class="divider">
         <span>{{ orText }}</span>
       </div>
 
-      <button v-if="firebaseConfigured" @click="handleGoogleAuth" class="btn btn-google" :disabled="loading">
+      <button @click="handleGoogleAuth" class="btn btn-google" :disabled="loading || !firebaseConfigured">
         <i class="fab fa-google"></i>
         {{ googleButtonText }}
       </button>
@@ -108,9 +113,10 @@ export default {
       registerPassword: '',
       loading: false,
       error: '',
+      successMessage: '',
       pendingApproval: false,
       darkMode: false,
-      currentLang: 'en', // Default language
+      currentLang: 'en',
       firebaseConfigured: false
     };
   },
@@ -131,13 +137,18 @@ export default {
       this.darkMode = savedDarkMode === 'true';
     },
     async handleLogin() {
+      if (!auth || !db) {
+        this.error = this.firebaseNotConfiguredMessage;
+        return;
+      }
       this.loading = true;
       this.error = '';
-      
+      this.successMessage = '';
+
       try {
         const userCredential = await signInWithEmailAndPassword(auth, this.loginEmail, this.loginPassword);
         const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-        
+
         if (userDoc.exists()) {
           const userData = userDoc.data();
           if (userData.approved || userData.role === 'admin') {
@@ -150,56 +161,63 @@ export default {
           this.error = this.pendingApprovalMessage;
           this.pendingApproval = true;
         }
-      } catch (error) {
-        this.error = this.getErrorMessage(error.code);
+      } catch (err) {
+        this.error = this.getErrorMessage(err.code);
       } finally {
         this.loading = false;
       }
     },
     async handleRegister() {
+      if (!auth || !db) {
+        this.error = this.firebaseNotConfiguredMessage;
+        return;
+      }
       this.loading = true;
       this.error = '';
-      
+      this.successMessage = '';
+
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, this.registerEmail, this.registerPassword);
-        
-        // Create user document with pending approval
+
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           email: this.registerEmail,
           approved: false,
           role: 'user',
           createdAt: new Date()
         });
-        
-        this.error = this.registrationSuccessMessage;
+
+        this.successMessage = this.registrationSuccessMessage;
         this.activeTab = 'login';
         this.pendingApproval = true;
-      } catch (error) {
-        this.error = this.getErrorMessage(error.code);
+      } catch (err) {
+        this.error = this.getErrorMessage(err.code);
       } finally {
         this.loading = false;
       }
     },
     async handleGoogleAuth() {
+      if (!auth || !db || !googleProvider) {
+        this.error = this.firebaseNotConfiguredMessage;
+        return;
+      }
       this.loading = true;
       this.error = '';
-      
+      this.successMessage = '';
+
       try {
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
-        
-        // Check if user document exists
+
         const userDoc = await getDoc(doc(db, 'users', user.uid));
-        
+
         if (!userDoc.exists()) {
-          // Create user document with pending approval
           await setDoc(doc(db, 'users', user.uid), {
             email: user.email,
             approved: false,
             role: 'user',
             createdAt: new Date()
           });
-          this.error = this.registrationSuccessMessage;
+          this.successMessage = this.registrationSuccessMessage;
           this.pendingApproval = true;
         } else {
           const userData = userDoc.data();
@@ -210,8 +228,8 @@ export default {
             this.pendingApproval = true;
           }
         }
-      } catch (error) {
-        this.error = this.getErrorMessage(error.code);
+      } catch (err) {
+        this.error = this.getErrorMessage(err.code);
       } finally {
         this.loading = false;
       }
@@ -353,6 +371,16 @@ export default {
   color: var(--text-primary, #2c3e50);
 }
 
+.info-message {
+  background-color: #cce5ff;
+  border: 1px solid #b8daff;
+  border-radius: var(--radius-md, 12px);
+  padding: var(--spacing-sm, 16px);
+  margin-bottom: var(--spacing-md, 24px);
+  color: #004085;
+  text-align: center;
+}
+
 .pending-message {
   background-color: #fff3cd;
   border: 1px solid #ffc107;
@@ -360,6 +388,16 @@ export default {
   padding: var(--spacing-sm, 16px);
   margin-bottom: var(--spacing-md, 24px);
   color: #856404;
+  text-align: center;
+}
+
+.success-message {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: var(--radius-md, 12px);
+  padding: var(--spacing-sm, 16px);
+  margin-bottom: var(--spacing-md, 24px);
+  color: #155724;
   text-align: center;
 }
 
@@ -522,5 +560,23 @@ export default {
 
 .dark-mode .divider span {
   background: var(--bg-white, #2d2d2d);
+}
+
+.dark-mode .info-message {
+  background-color: #1a3a52;
+  border-color: #2a5a82;
+  color: #b8daff;
+}
+
+.dark-mode .success-message {
+  background-color: #1e4620;
+  border-color: #2d6a2f;
+  color: #c3e6cb;
+}
+
+.dark-mode .error-message {
+  background-color: #4a2020;
+  border-color: #6a2d2d;
+  color: #f5c6cb;
 }
 </style>
