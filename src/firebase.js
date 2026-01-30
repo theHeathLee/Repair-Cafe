@@ -3,12 +3,12 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDummyKeyReplaceWithReal",
+  apiKey: "AIzaSyCfyKNhIB1HPjvrw0YWxCjdL1sWfwXvILM",
   authDomain: "fbtestproject-efe8a.firebaseapp.com",
   projectId: "fbtestproject-efe8a",
-  storageBucket: "fbtestproject-efe8a.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+  storageBucket: "fbtestproject-efe8a.firebasestorage.app",
+  messagingSenderId: "215782749895",
+  appId: "1:215782749895:web:f7ab6cf07f67d1d4ccb0e2"
 };
 
 // Check if Firebase config is valid (not placeholder values)
