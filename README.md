@@ -1,6 +1,6 @@
 # Repair Cafe Friedrichshain Website
 
-URL: https://fbtestproject-efe8a.web.app/
+URL: https://repair-cafe-f-hain.web.app/
 
 # how to maintain
 
