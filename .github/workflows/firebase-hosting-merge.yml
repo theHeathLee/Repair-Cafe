@@ -15,6 +15,6 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FBTESTPROJECT_EFE8A }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_REPAIR_CAFE_F_HAIN }}
           channelId: live
-          projectId: fbtestproject-efe8a
+          projectId: repair-cafe-f-hain
