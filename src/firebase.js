@@ -3,12 +3,13 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCfyKNhIB1HPjvrw0YWxCjdL1sWfwXvILM",
-  authDomain: "fbtestproject-efe8a.firebaseapp.com",
-  projectId: "fbtestproject-efe8a",
-  storageBucket: "fbtestproject-efe8a.firebasestorage.app",
-  messagingSenderId: "215782749895",
-  appId: "1:215782749895:web:f7ab6cf07f67d1d4ccb0e2"
+  apiKey: "AIzaSyA7HNYJN5wEo6m9sqszLvwsDVNJj_MNEb4",
+  authDomain: "repair-cafe-f-hain.firebaseapp.com",
+  projectId: "repair-cafe-f-hain",
+  storageBucket: "repair-cafe-f-hain.firebasestorage.app",
+  messagingSenderId: "176866837629",
+  appId: "1:176866837629:web:0af3c5c6f8ac4840089d14",
+  measurementId: "G-P0YRY838F1"
 };
 
 // Check if Firebase config is valid (not placeholder values)
