@@ -299,8 +299,8 @@ export default {
   computed: {
     headingText() {
       return this.currentLang === "de"
-        ? "Willkommen im Repair Café Friedrichshain"
-        : "Welcome to Repair Cafe Friedrichshain";
+        ? "Willkommen im Repair Café Friedrichshain!"
+        : "Welcome to Repair Cafe Friedrichshain!";
     },
     bodyText() {
       if (!this.nextDateFormatted) {
