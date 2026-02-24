@@ -314,8 +314,8 @@ export default {
           : `The Repair Cafe on ${this.nextDateFormatted} has been canceled`;
       }
       return this.currentLang === "de"
-        ? `Nächstes Repair Café ist am ${this.nextDateFormatted}`
-        : `Next cafe is on ${this.nextDateFormatted}`;
+        ? `Nächstes Repair Café ist am ${this.nextDateFormatted} von 14:00 bis 17:00`
+        : `Next cafe is on ${this.nextDateFormatted} from 14:00 to 17:00`;
     },
     mottoHeading() {
       return this.currentLang === "de" ? "Unser Motto" : "Our motto";
