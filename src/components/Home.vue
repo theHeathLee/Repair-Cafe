@@ -323,8 +323,8 @@ export default {
     },
     mottoText() {
       return this.currentLang === "de"
-        ? "Hilfe zur Selbsthilfe – das ist das Motto aller Reparatur-Initiativen."
-        : "Help for self-help – that is the motto of all repair initiatives.";
+        ? "Reparieren statt neu kaufen und somit einen Beitrag zur Schonung von Ressourcen leisten - das kann jede*r. Unter dem Motto \"Hilfe zur Selbsthilfe\" geben wir dir das Know-How und Werkzeug dazu an die Hand"
+        : "Repair instead of buying new and thus contribute to conserving resources – anyone can do it. Under the motto \"help for self-help\", we give you the know-how and tools to do it.";
     },
     togetherHeading() {
       return this.currentLang === "de"
