@@ -382,8 +382,8 @@ export default {
     },
     supportText() {
       return this.currentLang === "de"
-        ? "Schreibt uns eine Mail oder kommt gern vorbei. Es ist manchmal stressig, es klappt nicht immer alles und vielleicht ist auch mal der Kaffee alle. Aber unser Dank wird euch auf ewig verfolgen. Wir suchen insbesondere Leute, die Fahrräder reparieren können, und alle, die sich mit ihren Fähigkeiten einbringen möchten."
-        : "Send us an email or just drop by. Sometimes it’s stressful, not everything works out and maybe the coffee is gone – but you will have our eternal gratitude. We are especially looking for people who can repair bicycles and everyone who wants to contribute their skills.";
+        ? "Wenn du auch gern tüftelst und dich ehrenamtlich engagieren möchtest, dann mach mit! Du musst kein Handwerksmeister sein, um unser Team verstärken zu können, jede Fähigkeit und jeder Wissensstand ist Willkommen. Komm einfach beim nächsten Treffen vorbei oder schreib uns. Wir freuen uns auf dich."
+        : "If you enjoy tinkering and would like to volunteer, join us! You don’t need to be a master craftsman to strengthen our team – every skill and level of knowledge is welcome. Just come by at the next meeting or drop us a message. We look forward to meeting you.";
     },
     foundersHeading() {
       return this.currentLang === "de"
