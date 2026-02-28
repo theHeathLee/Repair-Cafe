@@ -333,8 +333,8 @@ export default {
     },
     togetherText() {
       return this.currentLang === "de"
-        ? "Ihr habt defekte Sachen oder Dinge, die nicht bestimmungsgemäß funktionieren? Lasst uns das gemeinsam ansehen. Wir sind eine freie Reparaturinitiative, die Hilfe zur Selbsthilfe leistet. Meist habt ihr selbst schon eine Ahnung, die wir gemeinsam verfolgen. Manchmal erarbeiten wir uns auch erst einen Plan. Nachhaltigkeit ist das Stichwort – nicht entsorgen und neu kaufen, reparieren."
-        : "You have broken items or things that no longer work as intended? Let’s have a look at them together. We are an open repair initiative that focuses on help for self-help. Often you already have an idea of what might be wrong and we explore it together. Sometimes we first work out a plan. The key idea is sustainability – don’t throw things away and buy new ones, repair them.";
+        ? "Es muss nicht immer das Lieblingsteil sein, das eine zweite Chance verdient. Viele Geräte, Kleidungsstücke oder Spielzeuge lassen sich reparieren.\n\nIm Repair-Café Friedrichshain bieten wir die Hilfe zur Selbsthilfe an. Egal, ob du um die \"zwei linken Hände\" fürchtest, nicht das richtige Werkzeug hast oder einfach nicht weißt \"wie\" - In gemütlicher und ungezwungener Atmosphäre schauen wir uns gemeinsam dein Reparatur-Projekt an, gehen mit dir auf Lösungssuche und zeigen dir den richtigen Einsatz von Werkzeug, um so fast Alles für eine längere Verwendung fit zu machen.\n\nMit oder ohne Vorkenntnisse kannst du nicht nur praktisch anpacken und verschiedene Dinge wieder funktionstüchtig machen, sondern auch Reparaturwissen teilen und vom Erfahrungsaustausch mit anderen Reparaturbegeisterten lernen."
+        : "It doesn’t always have to be your favourite item that deserves a second chance. Many devices, items of clothing or toys can be repaired.\n\nAt Repair Café Friedrichshain we offer help for self-help. Whether you’re worried about being all thumbs, don’t have the right tools, or simply don’t know \"how\" – in a cosy and relaxed atmosphere we take a look at your repair project together, search for solutions with you, and show you the right use of tools to get almost anything back in shape for longer use.\n\nWith or without prior knowledge, you can not only get hands-on and fix all kinds of things, but also share repair knowledge and learn from the experience of other repair enthusiasts.";
     },
     bringHeading() {
       return this.currentLang === "de"
@@ -813,6 +813,7 @@ body {
   font-size: 1.05rem;
   line-height: 1.7;
   color: var(--text-secondary);
+  white-space: pre-line;
 }
 
 .motto-image {
