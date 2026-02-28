@@ -54,6 +54,7 @@
           <div v-for="item in bringItems" :key="item.name" class="bring-item">
             <i :class="item.icon" class="bring-item-icon"></i>
             <span class="bring-item-name">{{ item.name }}</span>
+            <div class="bring-item-tooltip">{{ item.tooltip }}</div>
           </div>
         </div>
       </section>
@@ -348,29 +349,29 @@ export default {
     bringItems() {
       if (this.currentLang === "de") {
         return [
-          { name: "Elektro-Haushaltsgeräte", icon: "fas fa-blender" },
-          { name: "Elektrogeräte", icon: "fas fa-plug" },
-          { name: "Nähsachen", icon: "fas fa-cut" },
-          { name: "Software", icon: "fas fa-code" },
-          { name: "Handys", icon: "fas fa-mobile-alt" },
-          { name: "Tablets", icon: "fas fa-tablet-alt" },
-          { name: "Computer", icon: "fas fa-laptop" },
-          { name: "Drohnen", icon: "fas fa-helicopter" },
-          { name: "Fotozeug", icon: "fas fa-camera" },
-          { name: "Fahrräder", icon: "fas fa-bicycle" },
+          { name: "Elektro-Haushaltsgeräte", icon: "fas fa-blender", tooltip: "Toaster, Wasserkocher, Mixer, Staubsauger – alles, was in der Küche oder im Haushalt elektrisch betrieben wird." },
+          { name: "Elektrogeräte", icon: "fas fa-plug", tooltip: "Lampen, Ladegeräte, Lautsprecher, Radios und andere elektrische Geräte, die nicht mehr funktionieren." },
+          { name: "Nähsachen", icon: "fas fa-cut", tooltip: "Kaputte Nähmaschinen, Kleidung zum Flicken, Reißverschlüsse, Knöpfe – wir helfen beim Nähen und Reparieren von Textilien." },
+          { name: "Software", icon: "fas fa-code", tooltip: "Viren, langsame Computer, Programmabstürze oder Einrichtungsprobleme – wir helfen bei Software- und Betriebssystemproblemen." },
+          { name: "Handys", icon: "fas fa-mobile-alt", tooltip: "Smartphones mit kaputtem Display, Akku- oder Software-Problemen. Wir schauen gemeinsam, was sich reparieren lässt." },
+          { name: "Tablets", icon: "fas fa-tablet-alt", tooltip: "iPads und Android-Tablets mit technischen Problemen, ob Hardware oder Software – bringt sie einfach mit." },
+          { name: "Computer", icon: "fas fa-laptop", tooltip: "Laptops und Desktop-PCs, die nicht starten, zu langsam sind oder andere Probleme haben." },
+          { name: "Drohnen", icon: "fas fa-helicopter", tooltip: "Defekte Drohnen mit kaputten Rotoren, Akku- oder Elektronikproblemen – wir versuchen gemeinsam eine Lösung zu finden." },
+          { name: "Fotozeug", icon: "fas fa-camera", tooltip: "Kameras, Objektive, Blitzgeräte und Zubehör – analoge wie digitale Fotografie ist willkommen." },
+          { name: "Fahrräder", icon: "fas fa-bicycle", tooltip: "Platte Reifen, defekte Bremsen, klemmende Schaltungen – wir reparieren Fahrräder aller Art." },
         ];
       } else {
         return [
-          { name: "Household Appliances", icon: "fas fa-blender" },
-          { name: "Electronic Devices", icon: "fas fa-plug" },
-          { name: "Sewing Projects", icon: "fas fa-cut" },
-          { name: "Software", icon: "fas fa-code" },
-          { name: "Mobile Phones", icon: "fas fa-mobile-alt" },
-          { name: "Tablets", icon: "fas fa-tablet-alt" },
-          { name: "Computers", icon: "fas fa-laptop" },
-          { name: "Drones", icon: "fas fa-helicopter" },
-          { name: "Camera Gear", icon: "fas fa-camera" },
-          { name: "Bicycles", icon: "fas fa-bicycle" },
+          { name: "Household Appliances", icon: "fas fa-blender", tooltip: "Toasters, kettles, blenders, vacuum cleaners – anything electrically powered used in the kitchen or around the home." },
+          { name: "Electronic Devices", icon: "fas fa-plug", tooltip: "Lamps, chargers, speakers, radios and other electrical devices that have stopped working." },
+          { name: "Sewing Projects", icon: "fas fa-cut", tooltip: "Broken sewing machines, clothes that need mending, zippers, buttons – we help with sewing and textile repairs." },
+          { name: "Software", icon: "fas fa-code", tooltip: "Viruses, slow computers, crashing programs or setup issues – we help with software and operating system problems." },
+          { name: "Mobile Phones", icon: "fas fa-mobile-alt", tooltip: "Smartphones with cracked screens, battery or software issues. We'll take a look together and see what can be fixed." },
+          { name: "Tablets", icon: "fas fa-tablet-alt", tooltip: "iPads and Android tablets with technical problems, hardware or software – just bring them along." },
+          { name: "Computers", icon: "fas fa-laptop", tooltip: "Laptops and desktop PCs that won't start, run too slowly or have other issues." },
+          { name: "Drones", icon: "fas fa-helicopter", tooltip: "Drones with broken rotors, battery or electronics problems – we'll work together to find a solution." },
+          { name: "Camera Gear", icon: "fas fa-camera", tooltip: "Cameras, lenses, flashes and accessories – both analogue and digital photography is welcome." },
+          { name: "Bicycles", icon: "fas fa-bicycle", tooltip: "Flat tyres, broken brakes, stiff gears – we repair bikes of all kinds." },
         ];
       }
     },
@@ -882,6 +883,7 @@ body {
   padding: var(--spacing-sm);
   border-radius: var(--radius-md);
   transition: transform 0.2s ease, background-color 0.2s ease;
+  position: relative;
 }
 
 .bring-item:hover {
@@ -900,6 +902,40 @@ body {
   color: var(--text-secondary);
   text-align: center;
   font-weight: 500;
+}
+
+.bring-item-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--bg-white);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  width: 200px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+}
+
+.bring-item-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--text-primary);
+}
+
+.bring-item:hover .bring-item-tooltip {
+  opacity: 1;
 }
 
 .content h2 {
