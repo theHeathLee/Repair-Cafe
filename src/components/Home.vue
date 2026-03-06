@@ -195,8 +195,8 @@ export default {
         darkMode: isDarkMode,
       map: null,
       // Repair Cafe Friedrichshain coordinates
-      cafeLat: 52.51717437206033,
-      cafeLng: 13.46478597722804,
+      cafeLat: 52.517064,
+      cafeLng: 13.467321,
       showImpressum: false,
       showPrivacy: false,
     };
