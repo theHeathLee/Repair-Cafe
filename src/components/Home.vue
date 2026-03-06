@@ -158,14 +158,13 @@ import iconRetina from "leaflet/dist/images/marker-icon-2x.png";
 
 function getNextCafeDate() {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
   for (const dateEntry of upcomingDates) {
     // Handle both string format and object format
     const dateStr = typeof dateEntry === "string" ? dateEntry : dateEntry.date;
     const canceled = typeof dateEntry === "object" ? dateEntry.canceled : false;
     
-    const d = new Date(dateStr + "T12:00:00");
-    if (d >= today) {
+    const d = new Date(dateStr + "T17:00:00");
+    if (d > today) {
       const day = String(d.getDate()).padStart(2, "0");
       const month = String(d.getMonth() + 1).padStart(2, "0");
       const year = d.getFullYear();
