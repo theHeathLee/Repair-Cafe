@@ -239,6 +239,7 @@ export default {
         const userRef = doc(db, 'users', userId);
         await updateDoc(userRef, {
           approved: true,
+          role: 'admin',
           approvedAt: new Date(),
           approvedBy: currentUser.value.email
         });
