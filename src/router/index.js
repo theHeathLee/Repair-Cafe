@@ -3,7 +3,7 @@ import { auth } from '../firebase';
 import Home from '../components/Home.vue';
 import AdminDashboard from '../components/AdminDashboard.vue';
 import Login from '../components/Login.vue';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -43,7 +43,7 @@ const router = createRouter({
 });
 
 // Navigation guard to protect admin routes
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   
   if (requiresAuth) {
@@ -72,6 +72,13 @@ router.beforeEach(async (to, from, next) => {
           next({ path: '/login', query: { pending: 'true' } });
         }
       } else {
+        // New user (e.g. first Google sign-in) — create their doc and send to pending
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          email: currentUser.email,
+          approved: false,
+          role: 'user',
+          createdAt: new Date()
+        });
         next({ path: '/login', query: { pending: 'true' } });
       }
     } catch (error) {

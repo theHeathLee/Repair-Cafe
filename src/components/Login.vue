@@ -196,7 +196,7 @@ export default {
       }
     },
     async handleGoogleAuth() {
-      if (!auth || !db || !googleProvider) {
+      if (!auth || !googleProvider) {
         this.error = this.firebaseNotConfiguredMessage;
         return;
       }
@@ -205,30 +205,11 @@ export default {
       this.successMessage = '';
 
       try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-
-        if (!userDoc.exists()) {
-          await setDoc(doc(db, 'users', user.uid), {
-            email: user.email,
-            approved: false,
-            role: 'user',
-            createdAt: new Date()
-          });
-          this.successMessage = this.registrationSuccessMessage;
-          this.pendingApproval = true;
-        } else {
-          const userData = userDoc.data();
-          if (userData.approved || userData.role === 'admin') {
-            this.$router.push('/admin');
-          } else {
-            this.error = this.pendingApprovalMessage;
-            this.pendingApproval = true;
-          }
-        }
+        await signInWithPopup(auth, googleProvider);
+        // Let the router guard handle approval checking and new user creation
+        this.$router.push('/admin');
       } catch (err) {
+        console.error('Google auth error:', err.code, err.message);
         this.error = this.getErrorMessage(err.code);
       } finally {
         this.loading = false;
