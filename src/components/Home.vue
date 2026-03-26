@@ -19,7 +19,7 @@
         <i v-if="darkMode" class="fas fa-sun"></i>
         <i v-else class="fas fa-moon"></i>
       </button>
-      <router-link to="/admin" class="admin-link" :title="adminLinkText">
+      <router-link to="/login" class="admin-link" :title="adminLinkText">
         <i class="fas fa-cog"></i>
       </router-link>
     </div>

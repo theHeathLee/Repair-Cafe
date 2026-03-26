@@ -152,7 +152,7 @@ export default {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           if (userData.approved || userData.role === 'admin') {
-            this.$router.push('/admin');
+            this.$router.push(userData.role === 'admin' ? '/admin' : '/member');
           } else {
             this.error = this.pendingApprovalMessage;
             this.pendingApproval = true;
@@ -207,7 +207,7 @@ export default {
       try {
         await signInWithPopup(auth, googleProvider);
         // Let the router guard handle approval checking and new user creation
-        this.$router.push('/admin');
+        this.$router.push('/member');
       } catch (err) {
         console.error('Google auth error:', err.code, err.message);
         this.error = this.getErrorMessage(err.code);
