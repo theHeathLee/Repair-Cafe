@@ -3,6 +3,10 @@
     <div class="admin-header">
       <h1>{{ dashboardTitle }}</h1>
       <div class="header-actions">
+        <div class="lang-switcher">
+          <button type="button" :class="{ active: currentLang === 'de' }" @click="setLang('de')">DE</button>
+          <button type="button" :class="{ active: currentLang === 'en' }" @click="setLang('en')">EN</button>
+        </div>
         <span class="user-email">{{ currentUser?.email }}</span>
         <button @click="handleLogout" class="btn btn-secondary">{{ logoutText }}</button>
       </div>
@@ -59,12 +63,13 @@
         </button>
 
         <div class="actions">
-          <button 
-            @click="saveDates" 
-            class="btn btn-primary btn-large"
+          <button
+            @click="saveDates"
+            class="btn btn-large"
+            :class="saved ? 'btn-success' : 'btn-primary'"
             :disabled="loading || !isAdmin"
           >
-            {{ saveButtonText }}
+            {{ saved ? (currentLang === 'de' ? '✓ Gespeichert' : '✓ Saved') : saveButtonText }}
           </button>
           <router-link to="/" class="btn btn-secondary btn-large">
             {{ backToHomeText }}
@@ -131,9 +136,10 @@ export default {
     const loading = ref(false);
     const error = ref('');
     const success = ref('');
+    const saved = ref(false);
     const isAdmin = ref(false);
     const darkMode = ref(false);
-    const currentLang = ref('en'); // Default language
+    const currentLang = ref(localStorage.getItem('language') || 'en');
     let unsubscribeUsers = null;
 
     const checkDarkMode = () => {
@@ -141,8 +147,17 @@ export default {
       darkMode.value = savedDarkMode === 'true';
     };
 
-    const loadDates = () => {
-      // Convert upcomingDates to editable format
+    const loadDates = async () => {
+      try {
+        const snapshot = await getDoc(doc(db, 'appointments', 'upcoming'));
+        if (snapshot.exists() && snapshot.data().dates?.length) {
+          dates.value = snapshot.data().dates;
+          return;
+        }
+      } catch {
+        // fall through to static fallback
+      }
+      // Fallback to static file if Firestore unavailable or empty
       dates.value = upcomingDates.map(dateEntry => {
         if (typeof dateEntry === 'string') {
           return { date: dateEntry, canceled: false };
@@ -207,10 +222,10 @@ export default {
           updatedBy: currentUser.value.email
         }, { merge: true });
 
-        success.value = 'Dates saved successfully!';
+        saved.value = true;
         setTimeout(() => {
-          success.value = '';
-        }, 3000);
+          saved.value = false;
+        }, 2000);
       } catch (err) {
         console.error('Error saving dates:', err);
         error.value = 'Error saving dates. Please try again.';
@@ -243,6 +258,11 @@ export default {
           error.value = 'Error rejecting user. Please try again.';
         }
       }
+    };
+
+    const setLang = (lang) => {
+      currentLang.value = lang;
+      localStorage.setItem('language', lang);
     };
 
     const handleLogout = async () => {
@@ -310,7 +330,7 @@ export default {
 
     onMounted(async () => {
       checkDarkMode();
-      loadDates();
+      await loadDates();
 
       onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -338,6 +358,7 @@ export default {
       loading,
       error,
       success,
+      saved,
       isAdmin,
       darkMode,
       addNewDate,
@@ -348,6 +369,7 @@ export default {
       handleLogout,
       formatDate,
       currentLang,
+      setLang,
       dashboardTitle,
       appointmentsTitle,
       sectionDescription,
@@ -396,6 +418,28 @@ export default {
 
 .user-email {
   color: var(--text-secondary, #5a6c7d);
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-switcher button {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color, #e1e8ed);
+  background: transparent;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a6c7d);
+}
+
+.lang-switcher button.active {
+  background-color: var(--primary-color, #27ae60);
+  color: #fff;
+  border-color: var(--primary-color, #27ae60);
 }
 
 .admin-content {

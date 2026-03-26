@@ -4,14 +4,14 @@
       <button
         type="button"
         :class="{ active: currentLang === 'de' }"
-        @click="currentLang = 'de'"
+        @click="setLang('de')"
       >
         DE
       </button>
       <button
         type="button"
         :class="{ active: currentLang === 'en' }"
-        @click="currentLang = 'en'"
+        @click="setLang('en')"
       >
         EN
       </button>
@@ -151,14 +151,16 @@
 
 <script>
 import { upcomingDates } from "../upcomingDates.js";
+import { db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import iconRetina from "leaflet/dist/images/marker-icon-2x.png";
 
-function getNextCafeDate() {
+function getNextCafeDate(dates) {
   const today = new Date();
-  for (const dateEntry of upcomingDates) {
+  for (const dateEntry of dates) {
     // Handle both string format and object format
     const dateStr = typeof dateEntry === "string" ? dateEntry : dateEntry.date;
     const canceled = typeof dateEntry === "object" ? dateEntry.canceled : false;
@@ -181,14 +183,14 @@ function getNextCafeDate() {
 export default {
   name: 'HomePage',
   data() {
-    const next = getNextCafeDate();
+    const next = getNextCafeDate(upcomingDates);
       // Check if user has already given consent
       const consent = localStorage.getItem("cookieConsent");
       // Check for dark mode preference (default to light mode)
       const savedDarkMode = localStorage.getItem("darkMode");
       const isDarkMode = savedDarkMode === "true";
       return {
-        currentLang: "de",
+        currentLang: localStorage.getItem('language') || 'de',
         nextDateFormatted: next ? next.formatted : null,
         nextDateCanceled: next ? next.canceled : false,
         cookieConsent: consent !== null, // Show banner if no consent stored
@@ -201,13 +203,23 @@ export default {
       showPrivacy: false,
     };
   },
-  mounted() {
-    // Use nextTick to ensure DOM is fully rendered
+  async mounted() {
     this.$nextTick(() => {
       this.initMap();
     });
-    // Apply dark mode on mount
     this.applyDarkMode();
+
+    try {
+      const snapshot = await getDoc(doc(db, 'appointments', 'upcoming'));
+      const dates = snapshot.exists() ? snapshot.data().dates : null;
+      if (dates && dates.length) {
+        const next = getNextCafeDate(dates);
+        this.nextDateFormatted = next ? next.formatted : null;
+        this.nextDateCanceled = next ? next.canceled : false;
+      }
+    } catch {
+      // Firestore unavailable — static fallback remains in place
+    }
   },
   beforeUnmount() {
     if (this.map) {
@@ -282,6 +294,10 @@ export default {
       localStorage.setItem("cookieConsent", "declined");
       localStorage.setItem("cookieConsentDate", new Date().toISOString());
       this.cookieConsent = true;
+    },
+    setLang(lang) {
+      this.currentLang = lang;
+      localStorage.setItem('language', lang);
     },
     toggleDarkMode() {
       this.darkMode = !this.darkMode;

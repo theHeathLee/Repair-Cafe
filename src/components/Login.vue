@@ -1,6 +1,10 @@
 <template>
   <div class="login-container" :class="{ 'dark-mode': darkMode }">
     <div class="login-card">
+      <div class="lang-switcher">
+        <button type="button" :class="{ active: currentLang === 'de' }" @click="setLang('de')">DE</button>
+        <button type="button" :class="{ active: currentLang === 'en' }" @click="setLang('en')">EN</button>
+      </div>
       <h1>{{ loginTitle }}</h1>
       <div v-if="!firebaseConfigured" class="info-message">
         {{ firebaseNotConfiguredMessage }}
@@ -132,6 +136,10 @@ export default {
     this.firebaseConfigured = auth !== null && db !== null;
   },
   methods: {
+    setLang(lang) {
+      this.currentLang = lang;
+      localStorage.setItem('language', lang);
+    },
     checkDarkMode() {
       const savedDarkMode = localStorage.getItem('darkMode');
       this.darkMode = savedDarkMode === 'true';
@@ -154,11 +162,9 @@ export default {
           if (userData.approved || userData.role === 'admin') {
             this.$router.push(userData.role === 'admin' ? '/admin' : '/member');
           } else {
-            this.error = this.pendingApprovalMessage;
             this.pendingApproval = true;
           }
         } else {
-          this.error = this.pendingApprovalMessage;
           this.pendingApproval = true;
         }
       } catch (err) {
@@ -207,7 +213,7 @@ export default {
       try {
         await signInWithPopup(auth, googleProvider);
         // Let the router guard handle approval checking and new user creation
-        this.$router.push('/member');
+        this.$router.push('/admin');
       } catch (err) {
         console.error('Google auth error:', err.code, err.message);
         this.error = this.getErrorMessage(err.code);
@@ -520,6 +526,30 @@ export default {
 
 .back-link a:hover {
   text-decoration: underline;
+}
+
+.lang-switcher {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: var(--spacing-md, 24px);
+}
+
+.lang-switcher button {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color, #e1e8ed);
+  background: transparent;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a6c7d);
+}
+
+.lang-switcher button.active {
+  background-color: var(--primary-color, #27ae60);
+  color: #fff;
+  border-color: var(--primary-color, #27ae60);
 }
 
 .dark-mode .login-card {
