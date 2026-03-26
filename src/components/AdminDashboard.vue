@@ -683,28 +683,100 @@ export default {
 
 @media (max-width: 768px) {
   .admin-container {
-    padding: var(--spacing-md, 24px);
+    padding: 16px;
   }
 
   .admin-header {
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 12px;
+  }
+
+  .admin-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .user-email {
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 160px;
+  }
+
+  .dates-section,
+  .users-section {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
   }
 
   .date-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-sm, 16px);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .date-input-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .date-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
+  .btn-small {
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-large {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .actions .btn,
+  .actions a {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   .user-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-sm, 16px);
+    gap: 10px;
+    padding: 12px;
   }
 
-  .actions {
-    flex-direction: column;
+  .user-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .user-actions .btn {
+    flex: 1;
+    text-align: center;
   }
 }
 </style>
