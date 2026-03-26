@@ -1,6 +1,6 @@
 # Repair Cafe Friedrichshain Website
 
-URL: https://repair-cafe-f-hain.web.app/
+URL: https://repaircafe-friedrichshain.de/
 
 # how to maintain
 
