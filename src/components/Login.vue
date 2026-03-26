@@ -241,6 +241,7 @@ export default {
         'auth/email-already-in-use': this.emailInUseMessage,
         'auth/weak-password': this.weakPasswordMessage,
         'auth/invalid-email': this.invalidEmailMessage,
+        'auth/invalid-credential': this.wrongPasswordMessage,
         'auth/popup-closed-by-user': this.popupClosedMessage
       };
       return errorMessages[errorCode] || this.genericErrorMessage;

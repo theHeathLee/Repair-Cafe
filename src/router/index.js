@@ -5,6 +5,18 @@ import AdminDashboard from '../components/AdminDashboard.vue';
 import Login from '../components/Login.vue';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+
+// Returns a promise that resolves with the current user once Firebase auth is ready
+function getCurrentUser() {
+  return new Promise((resolve) => {
+    if (!auth) return resolve(null);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
 
 const routes = [
   {
@@ -42,9 +54,9 @@ router.beforeEach(async (to, from, next) => {
     }
 
     try {
-      // Check current auth state
-      const currentUser = auth.currentUser;
-      
+      // Wait for Firebase to restore auth state before checking
+      const currentUser = await getCurrentUser();
+
       if (!currentUser) {
         return next({ path: '/login' });
       }
