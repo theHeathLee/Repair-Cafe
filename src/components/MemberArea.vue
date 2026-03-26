@@ -6,9 +6,7 @@
         <button type="button" :class="{ active: currentLang === 'en' }" @click="setLang('en')">EN</button>
       </div>
     </div>
-    <div class="member-content">
-      <h1>{{ currentLang === 'de' ? 'Hallo Welt' : 'Hello World' }}</h1>
-    </div>
+    <div class="member-content"></div>
   </div>
 </template>
 
