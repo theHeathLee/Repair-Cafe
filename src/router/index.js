@@ -3,8 +3,21 @@ import { auth } from '../firebase';
 import Home from '../components/Home.vue';
 import AdminDashboard from '../components/AdminDashboard.vue';
 import Login from '../components/Login.vue';
-import { doc, getDoc } from 'firebase/firestore';
+import MemberArea from '../components/MemberArea.vue';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+
+// Returns a promise that resolves with the current user once Firebase auth is ready
+function getCurrentUser() {
+  return new Promise((resolve) => {
+    if (!auth) return resolve(null);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
 
 const routes = [
   {
@@ -16,6 +29,12 @@ const routes = [
     path: '/admin',
     name: 'AdminDashboard',
     component: AdminDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/member',
+    name: 'MemberArea',
+    component: MemberArea,
     meta: { requiresAuth: true }
   },
   {
@@ -31,7 +50,7 @@ const router = createRouter({
 });
 
 // Navigation guard to protect admin routes
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   
   if (requiresAuth) {
@@ -42,9 +61,9 @@ router.beforeEach(async (to, from, next) => {
     }
 
     try {
-      // Check current auth state
-      const currentUser = auth.currentUser;
-      
+      // Wait for Firebase to restore auth state before checking
+      const currentUser = await getCurrentUser();
+
       if (!currentUser) {
         return next({ path: '/login' });
       }
@@ -55,11 +74,22 @@ router.beforeEach(async (to, from, next) => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         if (userData.approved || userData.role === 'admin') {
+          // Redirect /admin to /member unless the user is explicitly an admin
+          if (to.path === '/admin' && userData.role !== 'admin') {
+            return next({ path: '/member' });
+          }
           next();
         } else {
           next({ path: '/login', query: { pending: 'true' } });
         }
       } else {
+        // New user (e.g. first Google sign-in) — create their doc and send to pending
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          email: currentUser.email,
+          approved: false,
+          role: 'user',
+          createdAt: new Date()
+        });
         next({ path: '/login', query: { pending: 'true' } });
       }
     } catch (error) {

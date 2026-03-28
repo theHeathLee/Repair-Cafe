@@ -1,6 +1,10 @@
 <template>
   <div class="login-container" :class="{ 'dark-mode': darkMode }">
     <div class="login-card">
+      <div class="lang-switcher">
+        <button type="button" :class="{ active: currentLang === 'de' }" @click="setLang('de')">DE</button>
+        <button type="button" :class="{ active: currentLang === 'en' }" @click="setLang('en')">EN</button>
+      </div>
       <h1>{{ loginTitle }}</h1>
       <div v-if="!firebaseConfigured" class="info-message">
         {{ firebaseNotConfiguredMessage }}
@@ -132,6 +136,10 @@ export default {
     this.firebaseConfigured = auth !== null && db !== null;
   },
   methods: {
+    setLang(lang) {
+      this.currentLang = lang;
+      localStorage.setItem('language', lang);
+    },
     checkDarkMode() {
       const savedDarkMode = localStorage.getItem('darkMode');
       this.darkMode = savedDarkMode === 'true';
@@ -152,13 +160,11 @@ export default {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           if (userData.approved || userData.role === 'admin') {
-            this.$router.push('/admin');
+            this.$router.push(userData.role === 'admin' ? '/admin' : '/member');
           } else {
-            this.error = this.pendingApprovalMessage;
             this.pendingApproval = true;
           }
         } else {
-          this.error = this.pendingApprovalMessage;
           this.pendingApproval = true;
         }
       } catch (err) {
@@ -196,7 +202,7 @@ export default {
       }
     },
     async handleGoogleAuth() {
-      if (!auth || !db || !googleProvider) {
+      if (!auth || !googleProvider) {
         this.error = this.firebaseNotConfiguredMessage;
         return;
       }
@@ -205,30 +211,11 @@ export default {
       this.successMessage = '';
 
       try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-
-        if (!userDoc.exists()) {
-          await setDoc(doc(db, 'users', user.uid), {
-            email: user.email,
-            approved: false,
-            role: 'user',
-            createdAt: new Date()
-          });
-          this.successMessage = this.registrationSuccessMessage;
-          this.pendingApproval = true;
-        } else {
-          const userData = userDoc.data();
-          if (userData.approved || userData.role === 'admin') {
-            this.$router.push('/admin');
-          } else {
-            this.error = this.pendingApprovalMessage;
-            this.pendingApproval = true;
-          }
-        }
+        await signInWithPopup(auth, googleProvider);
+        // Let the router guard handle approval checking and new user creation
+        this.$router.push('/admin');
       } catch (err) {
+        console.error('Google auth error:', err.code, err.message);
         this.error = this.getErrorMessage(err.code);
       } finally {
         this.loading = false;
@@ -241,6 +228,7 @@ export default {
         'auth/email-already-in-use': this.emailInUseMessage,
         'auth/weak-password': this.weakPasswordMessage,
         'auth/invalid-email': this.invalidEmailMessage,
+        'auth/invalid-credential': this.wrongPasswordMessage,
         'auth/popup-closed-by-user': this.popupClosedMessage
       };
       return errorMessages[errorCode] || this.genericErrorMessage;
@@ -538,6 +526,30 @@ export default {
 
 .back-link a:hover {
   text-decoration: underline;
+}
+
+.lang-switcher {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-bottom: var(--spacing-md, 24px);
+}
+
+.lang-switcher button {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color, #e1e8ed);
+  background: transparent;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a6c7d);
+}
+
+.lang-switcher button.active {
+  background-color: var(--primary-color, #27ae60);
+  color: #fff;
+  border-color: var(--primary-color, #27ae60);
 }
 
 .dark-mode .login-card {
